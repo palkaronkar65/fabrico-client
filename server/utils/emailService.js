@@ -1,16 +1,22 @@
-const nodemailer = require('nodemailer');
+const nodemailer = require("nodemailer");
 
-// Unified transporter – using port 587 (STARTTLS)
 const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 587,
-  secure: false, // true for 465, false for 587
+  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true, // important
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS
-  },
-  tls: {
-    rejectUnauthorized: false // only for development
+  }
+});
+
+// verify connection (very useful for Render logs)
+transporter.verify(function (error, success) {
+  if (error) {
+    console.error("SMTP connection error:", error);
+  } else {
+    console.log("SMTP server is ready");
   }
 });
 
@@ -19,13 +25,15 @@ const sendOtpEmail = async (email, otp) => {
     const mailOptions = {
       from: `"Fabrico" <${process.env.EMAIL_USER}>`,
       to: email,
-      subject: 'Your OTP for Registration or Forgot password',
+      subject: "Your OTP for Registration or Forgot password",
       text: `Your OTP is: ${otp}`,
       html: `<p>Your OTP is: <strong>${otp}</strong></p>`
     };
+
     await transporter.sendMail(mailOptions);
+    console.log("Email sent successfully");
   } catch (error) {
-    console.error('Email send error:', error);
+    console.error("Email send error:", error);
     throw error;
   }
 };

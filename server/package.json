@@ -20,8 +20,9 @@
     "fabrico-fullstack": "file:../..",
     "mongoose": "^8.17.0",
     "multer": "^2.0.2",
-    "nodemailer": "^7.0.10",
+    "nodemailer": "^7.0.13",
     "razorpay": "^2.9.6",
+    "resend": "^6.9.3",
     "socket.io": "^4.8.1"
   }
 }
