@@ -3,8 +3,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const cloudinary = require('cloudinary').v2;
-const nodemailer = require('nodemailer');
-const { transporter } = require('./utils/emailService');
+// Remove the local nodemailer require – we import the transporter from emailService
+const { transporter } = require('./utils/emailService'); // 👈 shared transporter
 
 const app = express();
 
@@ -12,7 +12,7 @@ const app = express();
 // ✅ Middleware
 // =====================================
 app.use(cors({
-  origin: "*", 
+  origin: "*",
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true
@@ -27,18 +27,6 @@ app.use(express.urlencoded({ extended: true }));
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.error('MongoDB connection error:', err));
-
-
-// =====================================
-// ✅ Nodemailer Transporter
-// =====================================
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL_USER,  // your gmail
-    pass: process.env.EMAIL_PASS,  // app password
-  },
-});
 
 // =====================================
 // ✅ INTEGRATED CONTACT FORM API
