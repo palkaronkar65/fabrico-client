@@ -1,16 +1,16 @@
 const nodemailer = require('nodemailer');
 
-// Create transporter once and reuse it everywhere
+// Unified transporter – using port 587 (STARTTLS)
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
-  port: 465,
-  secure: true,
+  port: 587,
+  secure: false, // true for 465, false for 587
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS
   },
   tls: {
-    rejectUnauthorized: false // for development only – you can remove this later
+    rejectUnauthorized: false // only for development
   }
 });
 
@@ -26,7 +26,7 @@ const sendOtpEmail = async (email, otp) => {
     await transporter.sendMail(mailOptions);
   } catch (error) {
     console.error('Email send error:', error);
-    throw error; // Rethrow to handle in the route
+    throw error;
   }
 };
 
