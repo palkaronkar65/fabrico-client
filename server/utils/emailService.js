@@ -1,15 +1,16 @@
 const nodemailer = require('nodemailer');
 
+// Create transporter once and reuse it everywhere
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
-  port: 465, // Use SSL port
+  port: 465,
   secure: true,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS
   },
   tls: {
-    rejectUnauthorized: false // Only for development!
+    rejectUnauthorized: false // for development only – you can remove this later
   }
 });
 
@@ -22,7 +23,6 @@ const sendOtpEmail = async (email, otp) => {
       text: `Your OTP is: ${otp}`,
       html: `<p>Your OTP is: <strong>${otp}</strong></p>`
     };
-
     await transporter.sendMail(mailOptions);
   } catch (error) {
     console.error('Email send error:', error);
@@ -30,4 +30,4 @@ const sendOtpEmail = async (email, otp) => {
   }
 };
 
-module.exports = { sendOtpEmail };
+module.exports = { sendOtpEmail, transporter };

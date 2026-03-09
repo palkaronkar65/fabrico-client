@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const cloudinary = require('cloudinary').v2;
 const nodemailer = require('nodemailer');
+const { transporter } = require('./utils/emailService');
 
 const app = express();
 
@@ -44,26 +45,22 @@ const transporter = nodemailer.createTransport({
 // =====================================
 app.post("/contact", async (req, res) => {
   const { name, email, message } = req.body;
-
-  if (!name || !email || !message)
+  if (!name || !email || !message) {
     return res.status(400).json({ error: "All fields required" });
+  }
 
   try {
     await transporter.sendMail({
       from: `"Fabrico Contact" <${process.env.EMAIL_USER}>`,
       to: process.env.RECEIVER_EMAIL,
       subject: `New Message from ${name} | Fabrico Contact Form`,
-
-      // ⭐ Beautiful HTML Styled Email ⭐
       html: `
         <div style="font-family: Arial, sans-serif; padding: 20px; background: #f4f4f4;">
           <div style="max-width: 600px; margin: auto; background: #ffffff; padding: 25px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.08);">
-
             <h2 style="color: #000; margin-bottom: 10px;">📩 New Contact Message</h2>
             <p style="color: #555; margin-bottom: 20px;">
               You received a new message from your <strong>Fabrico Contact Form</strong>.
             </p>
-
             <div style="padding: 15px; background: #fafafa; border-radius: 8px; border: 1px solid #eee;">
               <p style="margin: 8px 0;"><strong>Name:</strong> ${name}</p>
               <p style="margin: 8px 0;"><strong>Email:</strong> ${email}</p>
@@ -72,18 +69,17 @@ app.post("/contact", async (req, res) => {
                 ${message}
               </div>
             </div>
-
             <p style="margin-top: 25px; font-size: 12px; text-align: center; color: #999;">
-              © ${new Date().getFullYear()} Fabrico — Contact Form Notification
+              © ${new Date().getFullYear()} Fabrico --- Contact Form Notification
             </p>
           </div>
         </div>
-      `,
+      `
     });
 
     res.json({ success: true });
   } catch (err) {
-    console.error("Email error:", err);
+    console.error("❌ Contact email error:", err); // 👈 detailed log
     res.status(500).json({ error: "Failed to send email" });
   }
 });
